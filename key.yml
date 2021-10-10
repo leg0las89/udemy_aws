@@ -6,7 +6,7 @@
     - name: create key pair
       ec2_key:
         name: new_apple_key
-        state: absent
+        state: present
       register: new_key
     - debug:
         var: new_key
