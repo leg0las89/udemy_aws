@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: create key pair
+      ec2_key:
+        name: new_apple_key
+        state: absent
+      register: new_key
+    - debug:
+        var: new_key
+    - name: create file with key
+      copy:
+        content: "{{ new_key.key.private_key }}"
+        dest: ./new_apple_key.pem
+      when: new_key.changed and new_key.msg == "key pair created"
+    - name: delete key
+      file:
+        path: ./new_apple_key.pem
+        state: absent
+      when: new_key.msg == "key deleted"
+#ß
+
