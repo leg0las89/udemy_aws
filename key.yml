@@ -20,6 +20,6 @@
         path: ./new_apple_key.pem
         state: absent
       when: new_key.msg == "key deleted"
-      #
+
 
 
