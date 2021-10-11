@@ -16,3 +16,69 @@
         tenancy: default
         state: "{{ state }}"
       register: vpcout
+
+    - name: Create subnet Pub1
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PubSubCidr1 }}"
+        az: "{{ zone1 }}"
+        map_public: yes
+        tags:
+          Name: "Vp-Pub-sub-1"
+      register: pub_sub1
+    - name: Create subnet Pub2
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PubSubCidr2 }}"
+        az: "{{ zone2 }}"
+        map_public: yes
+        tags:
+          Name: "Vp-Pub-sub-2"
+      register: pub_sub2
+    - name: Create subnet Pub3
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PubSubCidr3 }}"
+        az: "{{ zone3 }}"
+        map_public: yes
+        tags:
+          Name: "Vp-Pub-sub-3"
+      register: pub_sub3
+
+    - name: Create subnet Private 1
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PrivSubCidr1 }}"
+        az: "{{ zone1 }}"
+        tags:
+          Name: "Vp-Priv-sub-1"
+      register: priv_sub1
+    - name: Create subnet Private 2
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PrivSubCidr2 }}"
+        az: "{{ zone2 }}"
+        tags:
+          Name: "Vp-Priv-sub-2"
+      register: priv_sub2
+    - name: Create subnet Private 3
+      ec2_vpc_subnet:
+        state: "{{ state }}"
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        cidr: "{{ PrivSubCidr3 }}"
+        az: "{{ zone3 }}"
+        tags:
+          Name: "Vp-Priv-sub-3"
+      register: priv_sub3
+    
