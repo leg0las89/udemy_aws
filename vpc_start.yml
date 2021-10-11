@@ -100,13 +100,13 @@
         subnets:
           - "{{ pub_sub1.subnet.id }}"
           - "{{ pub_sub2.subnet.id }}"
-          - "{{ pub_sub3.subnet_id }}"
+          - "{{ pub_sub3.subnet.id }}"
         routes:
           - dest: 0.0.0.0/0
             gateway_id: "{{ igw_out.gateway_id }}"
       register: pub_rt_out
 
-    - name: Create new nat gateway with client token.
+    - name: Create new nat gateway.
       ec2_vpc_nat_gateway:
         state: "{{ state }}"
         subnet_id: "{{ priv_sub1.subnet.id }}"
@@ -123,13 +123,14 @@
         subnets:
           - "{{ priv_sub1.subnet.id }}"
           - "{{ priv_sub2.subnet.id }}"
-          - "{{ priv_sub3.subnet_id }}"
+          - "{{ priv_sub3.subnet.id }}"
         routes:
           - dest: 0.0.0.0/0
             gateway_id: "{{ nat_gw_out.nat_gateway_id }}"
       register: priv_rt_out
-    
-    - name: Create variabel file
+
+    - name: Create file variable
       copy:
         content: "vpcid: {{ vpcout.vpc.id }}\npubsub1: {{ pub_sub1.subnet.id }}\npubsub2: {{ pub_sub2.subnet.id }}\npubsub3: {{ pub_sub3.subnet.id }}\nprivsub1: {{ priv_sub1.subnet.id }}\nprivsub2: {{ priv_sub2.subnet.id }}\nprivsub3: {{ priv_sub3.subnet.id }}\nigw: {{ igw_out.gateway_id }}\npubrtid: {{ pub_rt_out.route_table.id }}\nnatgwid: {{ nat_gw_out.nat_gateway_id }}\nprivrtid: {{ priv_rt_out.route_table.id }}"
         dest: vars/vpc_ids
+        mode: 0755
