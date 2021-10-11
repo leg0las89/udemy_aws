@@ -15,7 +15,4 @@
         dns_hostnames: yes
         tenancy: default
         state: "{{ state }}"
-        tags:
-          name: "VPC-vprofile"
-          branch: "prod"
       register: vpcout
