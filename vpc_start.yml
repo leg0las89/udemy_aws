@@ -5,16 +5,17 @@
   tasks:
     - name: Import vpc vars
       include_vars: vars/vpc_setup
-    - name: create a VPC 
-      amazon.aws.ec2_vpc_net:
-        name: "{{vpc_name}}"
-        cidr_block: "{{vpcCidr}}"
-        region: "{{region}}"
+
+    - name: create a VPC
+      ec2_vpc_net:
+        name: "{{ vpc_name }}"
+        cidr_block: "{{ vpcCidr }}"
+        region: "{{ region }}"
         dns_support: yes
         dns_hostnames: yes
         tenancy: default
-        state: "{{state}}"
+        state: "{{ state }}"
         tags:
           name: "VPC-vprofile"
           branch: "prod"
-        register: vpcout
+      register: vpcout
