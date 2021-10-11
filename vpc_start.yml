@@ -82,3 +82,54 @@
           Name: "Vp-Priv-sub-3"
       register: priv_sub3
     
+    - name: Create Internet gateway with tags
+      ec2_vpc_igw:
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        state: "{{ state }}"
+        tags:
+            Name: Vprofile_igw
+            Maintener: Devops
+      register: igw_out
+    - name: Set up public subnet route table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "Public Vprofile"
+        subnets:
+          - "{{ pub_sub1.subnet.id }}"
+          - "{{ pub_sub2.subnet.id }}"
+          - "{{ pub_sub3.subnet_id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ igw_out.gateway_id }}"
+      register: pub_rt_out
+
+    - name: Create new nat gateway with client token.
+      ec2_vpc_nat_gateway:
+        state: "{{ state }}"
+        subnet_id: "{{ priv_sub1.subnet.id }}"
+        wait: yes
+        region: "{{ region }}"
+        if_exist_do_not_create: yes
+      register: nat_gw_out
+    - name: Set up private subnet route table
+      ec2_vpc_route_table:
+        vpc_id: "{{ vpcout.vpc.id }}"
+        region: "{{ region }}"
+        tags:
+          Name: "Private Vprofile"
+        subnets:
+          - "{{ priv_sub1.subnet.id }}"
+          - "{{ priv_sub2.subnet.id }}"
+          - "{{ priv_sub3.subnet_id }}"
+        routes:
+          - dest: 0.0.0.0/0
+            gateway_id: "{{ nat_gw_out.nat_gateway_id }}"
+      register: priv_rt_out
+    
+    - name: Create variabel file
+      copy:
+        content: "vpcid: {{ vpcout.vpc.id }}\npubsub1: {{ pub_sub1.subnet.id }}\npubsub2: {{ pub_sub2.subnet.id }}\npubsub3: {{ pub_sub3.subnet.id }}\nprivsub1: {{ priv_sub1.subnet.id }}\nprivsub2: {{ priv_sub2.subnet.id }}\nprivsub3: {{ priv_sub3.subnet.id }}\nigw: {{ igw_out.gateway_id }}\npubrtid: {{ pub_rt_out.route_table.id }}\nnatgwid: {{ nat_gw_out.nat_gateway_id }}\nprivrtid: {{ priv_rt_out.route_table.id }}"
+        dest: vars/vpc_ids
