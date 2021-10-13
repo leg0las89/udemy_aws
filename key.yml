@@ -8,12 +8,14 @@
         name: new_apple_key
         state: present
       register: new_key
-    - debug:
+    - name: print everything
+      debug:
         var: new_key
     - name: create file with key
       copy:
         content: "{{ new_key.key.private_key }}"
         dest: ./new_apple_key.pem
+        mode: 0755
       when: new_key.changed and new_key.msg == "key pair created"
     - name: delete key
       file:
