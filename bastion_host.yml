@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  tasks:
+    - name: Import variable
+      include_vars: vars/bastion_host
+    - name: Import second vars
+      include_vars: vars/vpc_ids
