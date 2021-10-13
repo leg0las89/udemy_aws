@@ -38,6 +38,8 @@
           Name: "Bastion_Vprofile"
           Project: Vprofile
           Owner: Devops
-        group: "{{ sg_out.group_id }}"
+        group_id: "{{ sg_out.group_id }}"
       register: bastion_out
+    - debug:
+        var: bastion_out.assign_public_ip
         
