@@ -7,3 +7,37 @@
       include_vars: vars/bastion_host
     - name: Import second vars
       include_vars: vars/vpc_ids
+
+    - name: Security group
+      ec2_group:
+        name: "Bastion_host"
+        description: allow port 22
+        vpc_id: "{{ vpcid }}"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            ports:
+            - 22
+            cidr_ip: "{{ MYIP }}"
+            rule_desc: allow all on port 22
+      register: sg_out
+    - name: Creating ec2 instance
+      ec2:
+        key_name: new_apple_key
+        instance_type: t2.micro
+        image: "{{ bastion_ami }}"
+        region: "{{ region }}"
+        wait: yes
+        vpc_subnet_id: "{{ pubsub1 }}"
+        instance_tags:
+          Name: "Bastion_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "Bastion_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group: "{{ sg_out.group_id }}"
+      register: bastion_out
+        
