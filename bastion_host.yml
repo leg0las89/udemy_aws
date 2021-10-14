@@ -40,6 +40,13 @@
           Owner: Devops
         group_id: "{{ sg_out.group_id }}"
       register: bastion_out
-    - debug:
+    - name: print
+      debug:
         var: bastion_out.assign_public_ip
+    - name: Insert id into file
+      blockinfile:
+        path: vars/vpc_ids
+        block: |
+          bastion-sg-id: "{{ sg_out.group_id }}"
+          bastion_ip: "{{ bastion_out.assign_public_ip }}"
         

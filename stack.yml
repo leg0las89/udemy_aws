@@ -7,3 +7,154 @@
       include_vars: vars/vpc_setup
     - name: Import second vars
       include_vars: vars/vpc_ids
+    - name: securitygroup
+      ec2_group:
+        name: vprof_stack_sg
+        description: allow port 80
+        vpc_id: "{{ vpcid }}"
+        region: "{{ region }}"
+        rules:
+          - proto: tcp
+            ports:
+            - 80
+            cidr_ip: 0.0.0.0/0
+            rule_desc: allow all on port 80
+      register: stack-sg-out
+    - name: security group vprofile stack
+      ec2_group:
+        name: vprofile_stack
+        description: allow port 22
+        vpc_id: "{{ vpcid }}"
+        region: "{{ region }}"
+        purge_rules: no
+        rules:
+          - proto: tcp
+            ports:
+            - 22
+            group_id: "{{ bastion-sg-id }}"
+            rule_desc: allow all on port 22
+          - proto: tcp
+            ports:
+            - 80
+            group_id: "{{ stack-sg-out.group_id }}"
+            rule_desc: allow all on port 80
+      register: sg-vprofile-out
+    - name: Updaate Security group Vprofile-stack
+      ec2_group:
+        name: vprofile-stack
+        description: allow port Update
+        vpc_id: "{{ vpcid }}"
+        region: "{{ region }}"
+        purge_rules: no
+        rules:
+          - proto: all
+            group_id: "{{ sg-vprofile-out.group_id }}"
+
+    - name: Creating Nginx
+      ec2:
+        key_name: new_apple_key
+        region: "{{ region }}"
+        instance_type: t2.micro
+        image: "{{ ngnix_ami }}"
+        wait: yes
+        instance_tags:
+          Name: "Nginx_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "Nginx_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group_id: "{{ sg-vprofile-out.group_id }}"
+        vpc_subnet_id: "{{ privsub1 }}"
+      register: web01_out
+    - name: Creating Tomcat
+      ec2:
+        key_name: new_apple_key
+        region: "{{ region }}"
+        instance_type: t2.micro
+        image: "{{ tomcat_ami }}"
+        wait: yes
+        instance_tags:
+          Name: "Tomcat_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "Tomcat_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group_id: "{{ sg-vprofile-out.group_id }}"
+        vpc_subnet_id: "{{ privsub1 }}"
+      register: app01_out
+    - name: Creating Memcache
+      ec2:
+        key_name: new_apple_key
+        region: "{{ region }}"
+        instance_type: t2.micro
+        image: "{{ memcache_ami }}"
+        wait: yes
+        instance_tags:
+          Name: "Memcache_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "Memcache_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group_id: "{{ sg-vprofile-out.group_id }}"
+        vpc_subnet_id: "{{ privsub1 }}"
+      register: mc01_out
+    - name: Creating RabitMQ
+      ec2:
+        key_name: new_apple_key
+        region: "{{ region }}"
+        instance_type: t2.micro
+        image: "{{ rmq_ami }}"
+        wait: yes
+        instance_tags:
+          Name: "RabitMQ_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "RabitMQ_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group_id: "{{ sg-vprofile-out.group_id }}"
+        vpc_subnet_id: "{{ privsub1 }}"
+      register: rmq01_out
+    - name: Creating MySQL
+      ec2:
+        key_name: new_apple_key
+        region: "{{ region }}"
+        instance_type: t2.micro
+        image: "{{ mysql_ami }}"
+        wait: yes
+        instance_tags:
+          Name: "MySQL_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        exact_count: 1
+        count_tag:
+          Name: "MySQL_Vprofile"
+          Project: Vprofile
+          Owner: Devops
+        group_id: "{{ sg-vprofile-out.group_id }}"
+        vpc_subnet_id: "{{ privsub1 }}"
+      register: db01_out
+
+    - name: private ips
+      blockinfile:
+        path: vars/vpc_ids
+        block: |
+          
+          web01_ip: "{{ web01_out.private_ip }}"
+          app01_ip: "{{ app01_out.private_ip }}"
+          mc01_ip: "{{ mc01_out.private_ip }}"
+          rmq01_ip: "{{ rmq01_out.private_ip }}"
+          db01_ip: "{{ db01_out.private_ip }}"
+
+    
