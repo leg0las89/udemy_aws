@@ -42,11 +42,11 @@
       register: bastion_out
     - name: print
       debug:
-        var: bastion_out.assign_public_ip
+        var: bastion_out.tagged_instances[0].public_ip
     - name: Insert id into file
       blockinfile:
         path: vars/vpc_ids
         block: |
           bastion-sg-id: "{{ sg_out.group_id }}"
-          bastion_ip: "{{ bastion_out.assign_public_ip }}"
+          bastion_ip: "{{ bastion_out.tagged_instances[0].public_ip }}"
         
