@@ -20,10 +20,10 @@ state: "present"
 MYIP: 108.46.212.65/32
 #Bastion creation
 bastion_ami: "ami-02e136e904f3da870"
-ngnix_ami: "ami-0b81bbcbd2451f92a"
-tomcat_ami: "ami-0b81bbcbd2451f92a"
-memcache_ami: "ami-0b81bbcbd2451f92a"
-rmq_ami: "ami-0b81bbcbd2451f92a"
-mysql_ami: "ami-0b81bbcbd2451f92a"
+ngnix_ami: "ami-03c53cb2507dda8ae"
+tomcat_ami: "ami-03c53cb2507dda8ae"
+memcache_ami: "ami-03c53cb2507dda8ae"
+rmq_ami: "ami-03c53cb2507dda8ae"
+mysql_ami: "ami-03c53cb2507dda8ae"
 
 
