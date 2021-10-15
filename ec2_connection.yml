@@ -1,0 +1,13 @@
+---
+- hosts: ec2_bastion
+  remote_user: ec2-user
+  become: yes
+  become_method: sudo
+  connection: ssh
+  gather_facts: False
+  tasks:
+    - name: copy Pem file
+      copy:
+        src: new_apple_key.pem
+        dest: ~/new_apple_key.pem
+        mode: 0400
